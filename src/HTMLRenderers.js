@@ -21,6 +21,9 @@ function getImgProps(passProps) {
 }
 
 function normalizeUri(uri) {
+    if (!uri) {
+        return null
+    }
     return uri.startsWith('//') ? `https:${uri}` : uri;
 }
 
@@ -165,8 +168,8 @@ export function iframe (htmlAttribs, children, convertedCSSStyles, passProps) {
         <WebView testID="iframe" key={passProps.key} source={source} style={style} />
     );
 }
-
-export function pre (htlmAttribs, children, convertedCSSStyles, passProps) {
+//不导出了， 忽略pre，因为导致里面图片标签安卓会崩溃
+function pre (htlmAttribs, children, convertedCSSStyles, passProps) {
     return (
         <Text
           key={passProps.key}
