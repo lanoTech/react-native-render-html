@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Image, View, Text } from 'react-native';
 import PropTypes from 'prop-types';
+import ServerImage from '../../../src/components/common/ServerImage';
 
 export default class HTMLImage extends PureComponent {
     constructor (props) {
@@ -85,6 +86,7 @@ export default class HTMLImage extends PureComponent {
                 height: typeof styleHeight === 'string' && styleHeight.search('%') !== -1 ? styleHeight : parseInt(styleHeight, 10)
             });
         }
+        return
         // Fetch image dimensions only if they aren't supplied or if with or height is missing
         Image.getSize(
             source.uri,
@@ -93,7 +95,7 @@ export default class HTMLImage extends PureComponent {
                     return this.mounted && this.setState({ width: originalWidth, height: originalHeight });
                 }
                 const optimalWidth = imagesMaxWidth <= originalWidth ? imagesMaxWidth : originalWidth;
-                const optimalHeight = (optimalWidth * originalHeight) / originalWidth;
+                const optimalHeight = (optimalWidth * originalHeight) / originalWidth || 30;
                 this.mounted && this.setState({ width: optimalWidth, height: optimalHeight, error: false });
             },
             () => {
@@ -102,13 +104,9 @@ export default class HTMLImage extends PureComponent {
         );
     }
 
-    validImage (source, style, props = {}) {
+    validImage (source, style, props = {},width,height=100) {
         return (
-            <Image
-              source={source}
-              style={[style, { width: this.state.width, height: this.state.height, resizeMode: 'cover' }]}
-              {...props}
-            />
+            <ServerImage  {...props} style={{...style,marginTop:1}} source={source} width={props.imagesMaxWidth}/>
         );
     }
 
@@ -122,7 +120,8 @@ export default class HTMLImage extends PureComponent {
 
     render () {
         const { source, style, passProps } = this.props;
-
-        return !this.state.error ? this.validImage(source, style, passProps) : this.errorImage;
+        const {width,height} = this.state
+       
+        return !this.state.error ? this.validImage(source, style, passProps,width,height) : this.errorImage;
     }
 }
